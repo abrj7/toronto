@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    The "ar." mark from the top-left of the site.
+
+    Drawn on a filled tile rather than transparent: tab bars are light in
+    some browsers and dark in others, and bare dark glyphs disappear
+    against the dark ones. The tile carries the site's own paper tone so
+    it reads the same everywhere.
+
+    Generic monospace stack, not IBM Plex — favicons render outside the
+    page and can't reach a webfont, so naming one would just fall through
+    to a default anyway.
+  -->
+  <rect width="32" height="32" rx="7" fill="#e6cdbd" />
+  <text
+    x="16"
+    y="21.5"
+    text-anchor="middle"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    font-size="15"
+    font-weight="600"
+    letter-spacing="0.4"
+    fill="#1f1b16"
+  >ar.</text>
+</svg>

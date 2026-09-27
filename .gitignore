@@ -1,0 +1,14 @@
+# Build and dependency folders
+node_modules/
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.DS_Store
+
+# Local env files
+*.local
+.env*
+
+venv/
+tools/

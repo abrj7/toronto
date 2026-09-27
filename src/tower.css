@@ -1,0 +1,562 @@
+/* ============================================================
+   tower.css — the CN Tower study.
+
+   A full-window canvas with an editorial overlay. The type follows
+   the rest of the site (mono for structure, sans for reading) with
+   one addition: a serif for the title, the way a drawing set
+   carries a proper name in its title block.
+   ============================================================ */
+
+.tower {
+  --paper: #ebe4d9;
+  --tower-ink: var(--ink);
+  --tower-soft: var(--ink-muted);
+  --tower-accent: #b5532f;
+  --tower-card: rgba(247, 243, 236, 0.86);
+  --tower-card-line: rgba(31, 27, 22, 0.1);
+
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: var(--paper);
+  color: var(--tower-ink);
+  overflow: hidden;
+  transition: color 900ms var(--ease);
+}
+
+.tower--night {
+  --tower-ink: #f3ede4;
+  --tower-soft: rgba(243, 237, 228, 0.7);
+  --tower-accent: #e58a5d;
+}
+
+/* over a lit city, the overlay type needs a little help to stay legible */
+.tower--night .tower__head,
+.tower--night .tower__caption,
+.tower--night .tower__readout,
+.tower--night .tower__hint {
+  text-shadow: 0 1px 14px rgba(5, 9, 21, 0.85);
+}
+
+/* The site-wide grain is tuned for flat paper. Over a render it only needs
+   to hint — at full strength it muddies the night sky. */
+body.is-tower::after {
+  opacity: 0.2;
+}
+
+.tower__canvas {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.tower__canvas:active {
+  cursor: grabbing;
+}
+
+.tower__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1200ms var(--ease);
+}
+
+.tower--ready .tower__canvas canvas {
+  opacity: 1;
+}
+
+/* ---------- title block ---------- */
+.tower__head {
+  position: absolute;
+  top: clamp(1.25rem, 3.5vw, 2.75rem);
+  left: clamp(1rem, 3.5vw, 3rem);
+  pointer-events: none;
+}
+
+.tower__head a {
+  pointer-events: auto;
+}
+
+.tower__back {
+  display: inline-block;
+  margin-bottom: var(--s-5);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--tower-ink);
+}
+
+.tower__back:hover {
+  color: var(--tower-ink);
+  text-decoration: none;
+  opacity: 0.7;
+}
+
+.tower__dot {
+  color: var(--tower-accent);
+}
+
+.tower__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--tower-soft);
+}
+
+.tower__title {
+  margin-top: var(--s-1);
+  font-family: var(--font-serif);
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.tower__title em {
+  font-style: italic;
+}
+
+.tower__meta {
+  margin-top: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--tower-soft);
+}
+
+.tower__meta span {
+  margin: 0 0.6em;
+  opacity: 0.6;
+}
+
+/* ---------- tools ---------- */
+.tower__tools {
+  position: absolute;
+  top: clamp(1.25rem, 3.5vw, 2.75rem);
+  right: clamp(1rem, 3.5vw, 3rem);
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+}
+
+.tower__views {
+  display: flex;
+  gap: 2px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--tower-card);
+  border: 1px solid var(--tower-card-line);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.tower__view,
+.tower__follow {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.tower__view svg,
+.tower__follow svg,
+.tower__play svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tower__view:hover {
+  color: var(--ink);
+}
+
+.tower__view[aria-pressed="true"] {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(31, 27, 22, 0.12);
+}
+
+.tower__follow {
+  width: 54px;
+  height: 54px;
+  background: #2b2a27;
+  color: #f3ede4;
+}
+
+.tower__follow[data-active] {
+  background: var(--tower-accent);
+}
+
+/* ---------- stage caption ---------- */
+.tower__caption {
+  position: absolute;
+  left: clamp(1rem, 3.5vw, 3rem);
+  bottom: clamp(9.5rem, 18vh, 12rem);
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tower__caption > * {
+    animation: tower-in 700ms var(--ease) both;
+  }
+  .tower__caption > div {
+    animation-delay: 90ms;
+  }
+}
+
+@keyframes tower-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tower__num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(3rem, 6vw, 4.4rem);
+  line-height: 1;
+  color: var(--tower-accent);
+}
+
+.tower__line {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  line-height: 1.2;
+}
+
+.tower__sub {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--tower-soft);
+}
+
+/* ---------- readout ---------- */
+.tower__readout {
+  position: absolute;
+  right: clamp(1rem, 3.5vw, 3rem);
+  bottom: clamp(9.5rem, 18vh, 12rem);
+  text-align: right;
+  pointer-events: none;
+  font-family: var(--font-mono);
+}
+
+.tower__readout-label,
+.tower__readout-name {
+  font-size: var(--text-xs);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--tower-soft);
+}
+
+.tower__readout-value {
+  margin: 2px 0 6px;
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  font-weight: 300;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tower__readout-value small {
+  margin-left: 0.3em;
+  font-size: 0.45em;
+  color: var(--tower-soft);
+}
+
+.tower__readout-name {
+  padding-top: 6px;
+  border-top: 1px solid currentColor;
+  border-color: color-mix(in srgb, var(--tower-soft) 50%, transparent);
+}
+
+/* ---------- panel ---------- */
+.tower__panel {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(2.25rem, 5vh, 3.25rem);
+  transform: translateX(-50%);
+  width: min(900px, calc(100vw - 2rem));
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.25rem);
+  padding: clamp(0.9rem, 2vw, 1.25rem) clamp(1rem, 3vw, 2.25rem);
+  border-radius: 14px;
+  background: var(--tower-card);
+  border: 1px solid var(--tower-card-line);
+  box-shadow: 0 10px 40px rgba(31, 27, 22, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--ink);
+}
+
+.tower__play {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: #2b2a27;
+  color: #f3ede4;
+  transition: transform var(--dur) var(--ease);
+}
+
+.tower__play svg {
+  stroke-width: 2;
+}
+
+.tower__play svg path[d^="M8 5.5"] {
+  fill: currentColor;
+  stroke-width: 1.2;
+}
+
+.tower__play:hover {
+  transform: scale(1.05);
+}
+
+.tower__timeline {
+  flex: 1;
+  min-width: 0;
+}
+
+.tower__stages {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.tower__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 2px 0;
+  text-align: left;
+  color: var(--ink-muted);
+  transition: color var(--dur) var(--ease);
+}
+
+.tower__stage:hover {
+  color: var(--ink);
+}
+
+.tower__stage-n {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+}
+
+.tower__stage-name {
+  font-size: var(--text-base);
+}
+
+.tower__stage[aria-current="step"] {
+  color: var(--ink);
+}
+
+.tower__stage[aria-current="step"] .tower__stage-n {
+  color: var(--tower-accent);
+}
+
+.tower__track {
+  position: relative;
+  height: 26px;
+  margin-top: var(--s-2);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.tower__rail,
+.tower__fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-50%);
+}
+
+.tower__rail {
+  right: 0;
+  background: rgba(31, 27, 22, 0.14);
+}
+
+.tower__fill {
+  width: 0;
+  background: #b5532f;
+}
+
+.tower__knob {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid #b5532f;
+  background: #f7f3ec;
+  transform: translate(-50%, -50%);
+  transition: width 160ms var(--ease), height 160ms var(--ease);
+}
+
+.tower__track:hover .tower__knob,
+.tower__track:active .tower__knob {
+  width: 19px;
+  height: 19px;
+}
+
+.tower__hint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(0.6rem, 1.6vh, 1rem);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--tower-soft);
+  pointer-events: none;
+}
+
+/* ---------- height labels, pinned in 3D by engine.ts ---------- */
+.tower__labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tower-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform;
+  /* the anchor is the centreline; the tag sits off to the right of the
+     shaft, on a leader, the way a section drawing notes its levels */
+  margin-top: -0.6em;
+}
+
+.tower-label__rule {
+  width: 72px;
+  height: 1px;
+  align-self: center;
+  background: currentColor;
+  opacity: 0.45;
+  color: var(--tower-ink);
+}
+
+.tower-label__num {
+  font-size: var(--text-sm);
+  color: var(--tower-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.tower-label__sub {
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--tower-soft);
+}
+
+/* ---------- loading ---------- */
+.tower__loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 720px) {
+  .tower__tools {
+    top: auto;
+    bottom: 11.5rem;
+    right: 1rem;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+  }
+
+  .tower__views {
+    flex-direction: column;
+  }
+
+  .tower__view {
+    width: 36px;
+    height: 36px;
+  }
+
+  .tower__follow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .tower__readout {
+    top: clamp(1.25rem, 3.5vw, 2.75rem);
+    bottom: auto;
+    right: 1rem;
+  }
+
+  .tower__readout-name {
+    display: none;
+  }
+
+  .tower__caption {
+    bottom: 9rem;
+  }
+
+  .tower__panel {
+    bottom: 1.75rem;
+    gap: var(--s-3);
+    padding: var(--s-3);
+  }
+
+  .tower__play {
+    width: 42px;
+    height: 42px;
+  }
+
+  .tower__stage-name {
+    font-size: var(--text-xs);
+  }
+
+  .tower__hint {
+    display: none;
+  }
+
+  .tower-label__sub {
+    display: none;
+  }
+
+  .tower-label__rule {
+    width: 36px;
+  }
+}
